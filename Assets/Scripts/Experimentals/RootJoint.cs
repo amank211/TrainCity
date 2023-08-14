@@ -5,5 +5,5 @@ public class RootJoint : Joint{
 
     public override void movePrimaryRailPoints(Rail.Point type, Vector3 newPos) { }
 
-    public override void changeNode(Node node) {}
+    public override void changeNode(Node node) { }
 }
