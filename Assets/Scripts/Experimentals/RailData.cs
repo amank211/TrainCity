@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 [System.Serializable]
 public class RailData {
@@ -11,13 +8,13 @@ public class RailData {
     public LinkedList<Joint> joints = new LinkedList<Joint>();
 
     public BoundedPlane unityPlane;
-    public float range = 1000f;
+    public float planeRange = 1000f;
 
     public static int lastID = 1;
 
     public RailData() {
         createNewRailNetwork(new Node(new Vector3(0,0,0)));
-        unityPlane = new BoundedPlane(new Vector3(-range,0,-range), new Vector3(-range,0,range), new Vector3(range,0,range), new Vector3(range, 0, -range));
+        unityPlane = new BoundedPlane(new Vector3(-planeRange,0,-planeRange), new Vector3(-planeRange,0,planeRange), new Vector3(planeRange,0,planeRange), new Vector3(planeRange, 0, -planeRange));
     }
 
     public void addNewRail(LinkedListNode<Joint> jointNode, Node node) {
@@ -37,7 +34,7 @@ public class RailData {
 
     private void handleNewRailForRootJoint(LinkedListNode<Joint> jointNode, Node node) {
         var joint = jointNode.Value;
-        var rail = new Rail(joint.node.point, node.point);
+        var rail = new Rail(joint.node, node);
         var newJoint = new DeadJoint(node);
         newJoint.setPrimaryRail(rail);
         rail.jointOne = joint;
@@ -49,7 +46,7 @@ public class RailData {
 
     private void handleNewRailForDeadJoint(LinkedListNode<Joint> jointNode, Node node) {
         var joint = jointNode.Value;
-        Rail secondaryRail = new Rail(joint.node.point, node.point);
+        Rail secondaryRail = new Rail(joint.node, node);
         var convertedjoint = (joint as DeadJoint).convertToSingleJoint(secondaryRail);
         var newJoint = new DeadJoint(node);
         secondaryRail.jointOne = convertedjoint;
@@ -65,8 +62,8 @@ public class RailData {
     private void handleNewRailForSingleJoint(LinkedListNode<Joint> jointNode, Node node) {
         var joint = jointNode.Value;
         Node nodeFixed = new Node(getNodesForFixedRail(joint.node.point, node.point));
-        Rail fixedRail = new FixedRail(joint.node.point, nodeFixed.point);
-        Rail connectedRail = new Rail(nodeFixed.point, node.point);
+        Rail fixedRail = new FixedRail(joint.node, nodeFixed);
+        Rail connectedRail = new Rail(nodeFixed, node);
         var convertedjoint = (joint as SingleJoint).convertToJunctionJoint(fixedRail);
         var newJoint = new DeadJoint(node);
         var midJoint = new SingleJoint(nodeFixed);

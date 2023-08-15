@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Unity.IO.LowLevel.Unsafe;
-using Unity.VisualScripting;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class SingleJoint : Joint{
     public SingleJoint(Node node) : base(node) { }
@@ -19,7 +12,6 @@ public class SingleJoint : Joint{
     }
 
     public override void movePrimaryRailPoints(Rail.Point type, Vector3 newPos) {
-        Debug.Log("movePrimaryRailPoints single");
         switch (type)
         {
             case Rail.Point.ST:
@@ -27,21 +19,15 @@ public class SingleJoint : Joint{
             case Rail.Point.ST_HAND:
                 primaryRail.setStartHandle(newPos);
                 Rail secJointPrimRail = primaryRail.jointOne.primaryRail;
-                if (secJointPrimRail != null)
-                {
-                    var distance = Vector3.Distance(secJointPrimRail.endNode.point, secJointPrimRail.endHandle);
-                    var rotation = (primaryRail.startNode.point - primaryRail.startHandle).normalized;
-                    secJointPrimRail.autoMoveEndHandle(secJointPrimRail.endNode.point + distance * rotation);
-                }
+                var distance = Vector3.Distance(secJointPrimRail.endNode.point, secJointPrimRail.endHandle);
+                var rotation = (primaryRail.startNode.point - primaryRail.startHandle).normalized;
+                secJointPrimRail.autoMoveEndHandle(secJointPrimRail.endNode.point + distance * rotation);
                 break;
             case Rail.Point.EN_HAND:
                 primaryRail.setEndHandle(newPos);
-                if (secondaryRail != null)
-                {
-                    var distance = Vector3.Distance(secondaryRail.startNode.point, secondaryRail.startHandle);
-                    var rotation = (primaryRail.endNode.point - primaryRail.endHandle).normalized;
-                    secondaryRail.autoMoveStHandle(secondaryRail.startNode.point + distance * rotation);
-                }
+                distance = Vector3.Distance(secondaryRail.startNode.point, secondaryRail.startHandle);
+                rotation = (primaryRail.endNode.point - primaryRail.endHandle).normalized;
+                secondaryRail.autoMoveStHandle(secondaryRail.startNode.point + distance * rotation);
                 break;
         }
     }
@@ -53,10 +39,10 @@ public class SingleJoint : Joint{
     }
 
     public void setPrimaryRail(Rail rail) {
-        this.primaryRail = rail;
+        primaryRail = rail;
     }
 
     public void setSecRail(Rail rail) {
-        this.secondaryRail = rail;
+        secondaryRail = rail;
     }
 }

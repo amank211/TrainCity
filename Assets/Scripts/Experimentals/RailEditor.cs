@@ -1,22 +1,19 @@
 using System.Collections.Generic;
-using System.IO;
 using UnityEditor;
 using UnityEngine;
 
 [CustomEditor(typeof(RailBuilder))]
-public class PathEditor : Editor {
+public class RailEditor : Editor {
 
     RailBuilder builder;
-    RailData railData;
-
     Joint currentJointSelected = null;
 
     void OnSceneGUI() {
         Draw();
-        InputMe();
+        Input();
     }
 
-    void InputMe() {
+    void Input() {
         Event guiEvent = Event.current;
         if (guiEvent.type == EventType.MouseDown && guiEvent.button == 0 && guiEvent.shift) {
             Undo.RecordObject(builder, "Add joint");
@@ -28,10 +25,12 @@ public class PathEditor : Editor {
             {
                 //Get the point that is clicked
                 Vector3 hitPoint = ray.GetPoint(enter);
-                    LinkedListNode<Joint> currentNode = builder.railData.joints.Find(currentJointSelected);
+                LinkedListNode<Joint> currentNode = builder.railData.joints.Find(currentJointSelected);
 
-                    if (currentNode != null)
-                        builder.railData.addNewRail(currentNode, new Node(hitPoint));
+                if (currentNode != null)
+                {
+                    builder.railData.addNewRail(currentNode, new Node(hitPoint));
+                }
                 
             }
         }
@@ -48,7 +47,7 @@ public class PathEditor : Editor {
         };
 
         Handles.DrawSolidRectangleWithOutline(verts, new Color(100f, 0.5f, 0.5f, 0.1f), new Color(100, 0, 0, 1));
-        LinkedList<JointNode> editorGraph = getUiGraph(railData.joints);
+        LinkedList<JointNode> editorGraph = getUiGraph(builder.railData.joints);
 
         Handles.color = Color.red;
         LinkedList<JointNode>.Enumerator jointsEnum = editorGraph.GetEnumerator();
@@ -218,7 +217,6 @@ public class PathEditor : Editor {
         {
             builder.createRailData();
         }
-        railData = builder.railData;
     }
 
     public class JointNode {
